@@ -101,16 +101,32 @@ CDD 框架定义了不同宇宙纪元的谱权重：
 - **结构纪元**: (15, 60, 25) — 当前宇宙
 - **热寂纪元**: (33, 33, 34) — 近似等权 (1/3, 1/3, 1/3)，整数缩放下不可精确表示
 
-## 许可证
+## 版权与许可证
 
-MIT License
+本项目采用**双许可证框架**，对源代码和理论文档分别授权，受中美两国知识产权法保护。
+
+| 组件 | 许可证 | 适用文件 |
+|------|--------|----------|
+| 源代码 | Apache License 2.0 | `*.lean`, `*.toml`, `*.json` |
+| 理论文档 | CC BY-NC 4.0 | `README.md`, `*.md`, `docs/` |
+
+**学术引用要求**: 任何学术使用必须引用本项目（见下方引用格式）。
+
+**法律依据**:
+- 中华人民共和国: 《著作权法》《民法典·知识产权编》《计算机软件保护条例》
+- 美国: Copyright Act of 1976 (17 U.S.C.)、DMCA、Lanham Act
+- 国际条约: 伯尔尼公约、TRIPS、WIPO版权条约
+
+详见 [LICENSE](LICENSE) 文件（含完整法律条文与管辖条款）。
 
 ## 引用
 
 ```bibtex
 @misc{cdd_kakeya_lean4,
   title={CDD Kakeya Conjecture Spectral Resolution: Lean 4 Conditional Equivalence Formalization},
+  author={CDD Formalization Project},
   year={2026},
+  howpublished={\url{https://github.com/HZDF-2026/cdd-kakeya-lean4}},
   note={Lean 4 formalization, 0 sorry, pure core (no Mathlib)}
 }
 ```
