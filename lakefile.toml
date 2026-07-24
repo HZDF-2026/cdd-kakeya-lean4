@@ -1,0 +1,6 @@
+name = "cdd_formalization"
+version = "0.1.0"
+defaultTargets = ["CddFormalization"]
+
+[[lean_lib]]
+name = "CddFormalization"
