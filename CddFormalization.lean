@@ -16,3 +16,4 @@
 -- Import modules here that should be built as part of the library.
 import CddFormalization.Basic
 import CddFormalization.Kakeya
+import CddFormalization.T1_SCCO

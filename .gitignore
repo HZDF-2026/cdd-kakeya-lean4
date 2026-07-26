@@ -11,3 +11,7 @@ desktop.ini
 *.swp
 *.swo
 *~
+
+# Temporary compilation output
+errors.txt
+*.txt
