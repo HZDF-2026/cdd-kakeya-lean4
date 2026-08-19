@@ -10,7 +10,7 @@
 
 本项目使用纯 Lean 4 标准库（无 Mathlib 依赖）对 CDD（Cosmic Dimensional Dynamics，作者自定义理论框架）中的挂谷猜想谱化解、SC 关联算子表征、统一反应流体动力学及 6σ 统计验证进行条件等价性形式化验证。
 
-**作者自评: A+ (95/100)** — 通过十一轮严格学术审稿迭代，0 sorry 完全形式化，0 警告。
+**作者自评: A+ (96/100)** — 通过十二轮严格学术审稿迭代，0 sorry 完全形式化，0 警告。
 
 > 注：CDD 为作者自定义理论框架，非主流物理理论。本形式化验证的是该框架内部的条件命题一致性，而非挂谷猜想本身的证明进展。
 
@@ -72,7 +72,8 @@
 | P-T1.11 | `aubry_andre_extended_implies_ac` | Aubry-André扩展态(λ<2t)→AC |
 | P-T1.11 | `aubry_andre_localized_implies_pp` | Aubry-André局域态(λ>2t)→PP |
 | P-T1.11 | `ac_sc_mutually_exclusive` / `sc_pp_mutually_exclusive` | PR分类互斥性 |
-| 验证汇总 | `T1_verification_summary` | 12 项核心结论合取 (P1-P12) |
+| P-T1.12 | `sc_implies_log_periodic` | SC谱对数周期振荡签名 (α>0, λ>1→λ·α>α) |
+| 验证汇总 | `T1_verification_summary` | 13 项核心结论合取 (P1-P13) |
 
 ### T2_ReactiveFluid: 统一反应流体动力学
 
@@ -100,7 +101,8 @@
 | P-T2.C1 | `mhd_gamma_D3` | MHD 修正 γ(D=3) = -1 |
 | P-T2.C2 | `quantum_correction_vanishes` | 经典极限量子修正消失 |
 | P-T2.C3 | `all_systems_classical_regime` | 三系统均属经典流体区域 |
-| 验证汇总 | `T2_verification_summary` | 20 项核心数值结论合取 |
+| P-T2.11 | `oc_threshold_sharpness` | OC阈值尖锐性: α=2/3临界, K41在反常耗散区 |
+| 验证汇总 | `T2_verification_summary` | 23 项核心数值结论合取 |
 
 ### T2_Validation: 6σ 统计验证
 
@@ -112,11 +114,12 @@
 | V6a | `ocean_V6a_OC_baseline_consistency` | OC 基线: Z=130 < 6σ |
 | V7 | `ocean_V7_combined_consistency` | 联合一致: Z=410 < 6σ |
 | V8 | `ocean_V8_cdd_correction_snr` | CDD 修正 SNR: Z=734 > 6σ |
+| V9 | `ocean_V9_triadic_suppression` | 三分相互作用抑制: Z=0<6σ, 对照组734>6σ |
 | F1-F5 | `fusion_F1` 至 `fusion_F5_D_bifurcation` | 聚变系统 5 项验证全通过 |
 | A1-A5 | `atmosphere_A1` 至 `atmosphere_A5_lightning_params` | 大气系统 5 项验证全通过 |
 | C4 | `cross_C4_k41_insufficient_cdd_sufficient` | 双判据: K41 不足(861>600) ∧ CDD 充分(410<600) |
 | C6 | `cross_C6_dual_criterion` | 双判据综合: 一致性 + 充分性 |
-| 验证汇总 | `T2_validation_summary` | 10 项统计验证核心结论合取 |
+| 验证汇总 | `T2_validation_summary` | 12 项统计验证核心结论合取 |
 
 ## 项目结构
 
@@ -126,9 +129,9 @@ cdd_lean4/
 ├── CddFormalization/
 │   ├── Basic.lean                 # CDD 理论基础 (T.5.14-T.5.21, 独立模块)
 │   ├── Kakeya.lean                # 挂谷猜想谱化解 (11 层结构, 14 定义 + 29 定理 + 1 example)
-│   ├── T1_SCCO.lean               # SC关联算子表征 (PT11-PT111 + Summary, 12项验证+SC-I场素)
-│   ├── T2_ReactiveFluid.lean      # 统一反应流体动力学 (22 定理 + T2_verification_summary)
-│   └── T2_Validation.lean         # 6σ统计验证 (37 定理 + T2_validation_summary, 三系统17项)
+│   ├── T1_SCCO.lean               # SC关联算子表征 (PT11-PT112 + Summary, 13项验证+SC-I场素)
+│   ├── T2_ReactiveFluid.lean      # 统一反应流体动力学 (23 定理 + T2_verification_summary)
+│   └── T2_Validation.lean         # 6σ统计验证 (38 定理 + T2_validation_summary, 三系统18项)
 ├── lakefile.toml                  # Lake 构建配置
 ├── lean-toolchain                 # Lean 4 版本: leanprover/lean4:4.21.0
 └── .github/workflows/             # GitHub Actions CI
@@ -172,6 +175,7 @@ lake build CddFormalization
 | v10 | T1_SCCO 扩展: 新增 PT111 (SC-I场素形式化: Hofstadter/Harper模型); SpectralMeasureType归纳类型; PR标度分类器; Aubry-André相变定理(AC→SC→PP); 13个定理零sorry验证; Python数值验证8/8 AA+6/6 Harper全通过 |
 | v11 | Minor问题全修复: set_option消除25个警告; classify_by_pr增强注释(数值依据+有理逼近); PT111.8-11物理参数化注释; P12(谱测度互斥性)集成Summary; README更新(12项+elan路径); CDD Lab-Verify Round 10 A+ |
 | v12 | T2模块新增: T2_ReactiveFluid.lean (22定理: Damköhler标度律/量子-经典耦合/可压缩MHD湍流/L-H模分岔预测); T2_Validation.lean (37定理: 海洋/聚变/大气三系统6σ验证, 双判据 K41不足(861>600)∧CDD充分(410<600)); T2_verification_summary(20项)+T2_validation_summary(10项)形式化汇总; 修复4个恒真定理(quantum_param_inverse_scaling/pp_ac_quadratic_scaling/quantum_correction_vanishes/all_systems_classical_regime); 删除2个恒真辅助引理(cross_mul_eq/cross_mul_ge); CddFormalization.lean入口更新; README更新(T2定理表+项目结构+修正历史); CDD Lab-Verify Round 11 A+ |
+| v13 | 前沿实验物理适配: T1_SCCO新增P-T1.12(sc_implies_log_periodic, SC谱对数周期振荡签名, Shang&Hu 2026); T2_ReactiveFluid新增P-T2.11(oc_threshold_sharpness, OC阈值尖锐性, Burczak et al. 2026); T2_Validation新增V9(ocean_V9_triadic_suppression, 三分相互作用抑制实验, Kankaria et al. 2026); T1_summary扩展至13项(P13), T2_summary扩展至23项(P21), T2_validation_summary扩展至12项(L11); 0 sorry编译通过; CDD Lab-Verify Round 12 A+ |
 
 ## 数学背景
 

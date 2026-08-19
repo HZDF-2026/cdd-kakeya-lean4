@@ -81,7 +81,7 @@ theorem ultimate_persistence (BAF : Int) :
   simp [persistence_CDD]
 
 -- P_CDD proportional to w_pp/eta_ac when BAF = 1/eta_ac (scaled)
-theorem persistence_scaling (w_pp eta_ac : Int) (h : eta_ac ≠ 0) :
+theorem persistence_scaling (w_pp eta_ac : Int) :
     persistence_CDD w_pp eta_ac 1 = w_pp * (1 - eta_ac) := by
   simp [persistence_CDD]
 
@@ -100,7 +100,7 @@ namespace T518
 -- Numerical: BMF=5, epsilon=1 (scaled), N=4 => 5^4 = 625
 
 -- Biomagnification ratio with integer scaling
-theorem biomagnification_ratio_int (BMF C0 E0 : Int) (N : Nat) :
+theorem biomagnification_ratio_int (BMF C0 : Int) (N : Nat) :
     BMF^N * C0 = C0 * BMF^N := by
   ac_rfl
 
@@ -190,6 +190,10 @@ end T520
 namespace T521
 
 -- Earth natural weights: 15 + 60 + 25 = 100 (scaled by 100)
+-- Cross-reference: RatVerification.lean provides precise Rat representation:
+--   w_ac_exact = 9/14 ≈ 0.643 (vs 60/100 = 0.60, error = 3/70 ≈ 4.3%)
+--   w_pp_exact = 2/7, w_sc_exact = 1/14
+--   See CDDRatVerification.w_ac_approx_error_correct for error quantification
 theorem earth_natural_weights_sum :
     (15 : Int) + 60 + 25 = 100 := by
   decide

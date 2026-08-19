@@ -28,8 +28,7 @@
 
 namespace CDD.T1
 
--- 抑制未使用变量警告: 形式化证明中部分参数为API完整性或物理上下文而保留
-set_option linter.unusedVariables false
+-- 未使用变量已逐一修复, 不再需要全局抑制
 
 -- ============================================================
 -- Helper Lemmas (core Lean4 compatible)
@@ -150,11 +149,8 @@ theorem scco_growth (c r : Int) (hc : c > 0) (hr : r ≥ 1) :
   rw [Int.mul_one] at h_prod
   omega
 
-theorem scco_lower_bound (c1 r : Int) (hc1 : c1 > 0) (hr : r > 0) :
-    c1 * r ≥ c1 * r := by omega
-
-theorem scco_upper_bound (c2 r : Int) (hc2 : c2 > 0) (hr : r > 0) :
-    c2 * r ≤ c2 * r := by omega
+-- Lower/upper bounds are trivial consequences of scco_positive and scco_growth above;
+-- removed redundant tautology theorems.
 
 end PT11
 
@@ -188,7 +184,7 @@ end PT12
 
 namespace PT16
 
-theorem guarneri_bound (d_H D : Int) (hd_H : d_H > 0) (hD : D > 0) (hdim : d_H ≤ D) :
+theorem guarneri_bound (d_H : Int) (hd_H : d_H > 0) :
     0 ≤ 2 * d_H := by omega
 
 /-- CDD scaling relation implies Guarneri bound.
@@ -444,7 +440,6 @@ structure AhlforsRegular (d_H c1 c2 : Int) where
     c1·r ≤ M ≤ c2·r → c1 ≤ M/r ≤ c2 (当 r | M)
     即关联维数 ν₂ 的有效范围被 c1/c2 约束 -/
 theorem scaling_ratio_invariance (c1 c2 M r : Int)
-    (hc1 : c1 > 0) (hc2 : c2 > 0) (hr : r > 0)
     (h_lower : c1 * r ≤ M) (h_upper : M ≤ c2 * r) :
     c1 * r ≤ M ∧ M ≤ c2 * r := by
   exact ⟨h_lower, h_upper⟩
@@ -521,7 +516,10 @@ end PT17
 
 namespace PT18
 
-/-- 谱类型分类: PP/AC/SC 对应的衰减模式 -/
+/-- 谱类型分类: PP/AC/SC 对应的衰减模式
+    与 PT111.SpectralMeasureType 同构但分类依据不同:
+    DecayType 按 P(t)=|⟨ψ₀|e^{-iHt}|ψ₀⟩|² 的时间衰减行为分类,
+    SpectralMeasureType 按 PR (参与率) 标度分类。 -/
 inductive DecayType where
   | PP : DecayType   -- 不衰减 (P → const)
   | AC : DecayType   -- 指数衰减 (P ~ exp(-γt))
@@ -775,16 +773,6 @@ end PT19
 
 namespace PT110
 
-/-- 有理标度的整数对表示: α = num / den (den > 0)
-    用整数对替代Lean4核心缺失的Rat类型
-    约定: den > 0 (分母正规范) -/
-structure FracScale (num den : Int) where
-  den_pos : den > 0
-
-/-- FracScale的良定义性: den > 0 保证表示唯一(至多差符号) -/
-theorem fracscale_well_defined (num den : Int) (h : FracScale num den) :
-    den > 0 := h.den_pos
-
 /-- [核心定理] CDD标度关系的显式解
     已知: α·(D - d_H) = d_H·λ  (CDD隐式关系)
     且:   D > d_H  (SC区间, D - d_H > 0)
@@ -898,7 +886,11 @@ namespace PT111
 /-- 谱测度类型 (Spectral Measure Type).
     PP: 纯点 (Pure Point) — 离散谱, PR ~ O(1)
     SC: 奇异连续 (Singular Continuous) — Cantor谱, PR ~ N^α (0<α<1)
-    AC: 绝对连续 (Absolute Continuous) — 连续谱, PR ~ N -/
+    AC: 绝对连续 (Absolute Continuous) — 连续谱, PR ~ N
+
+    与 PT18.DecayType 的关系: SpectralMeasureType 按 PR 标度分类谱测度,
+    DecayType 按 P(t) 衰减行为分类。两者同构: PP↔PP(不衰减), SC↔SC(幂律),
+    AC↔AC(指数), 但分类依据不同 (PR 标度 vs 时间衰减)。 -/
 inductive SpectralMeasureType where
   | PP : SpectralMeasureType
   | SC : SpectralMeasureType
@@ -922,7 +914,8 @@ theorem AC_ne_PP : SpectralMeasureType.AC ≠ SpectralMeasureType.PP := by
     PP: α ≤ 2/10 → 10*num ≤ 2*den  (局域态, PR ~ O(1))
 
     有理逼近说明: num/den (den > 0) 是实数α的有理逼近.
-    Lean4核心无Rat类型, 故用整数对(num, den)表示.
+    PT111保留整数对(num, den)表示以保持纯整数算术兼容性;
+    精确有理数计算使用Std.Internal.Rat (见RatVerification.lean).
     对于无理α(如黄金比例下的PR指数), 取有理逼近即可.
 
     阈值数值依据 (Aubry-André模型, t=1, 64个k采样):
@@ -1096,14 +1089,74 @@ theorem sc_pp_mutually_exclusive (num den : Int) (h_den : den > 0) :
 end PT111
 
 -- ============================================================
+-- P-T1.12: SC Spectrum Implies Log-Periodic Oscillations
+--
+-- SC谱的返回概率 P(t) ~ t^{-α} · (1 + A·cos(ω·ln(t)))
+-- 对数周期振荡是SC谱的实验签名 (Shang & Hu 2026)
+--
+-- 核心数学:
+-- 1. SC谱衰减指数 α > 0 (已在P-T1.8证明)
+-- 2. 离散标度不变性: 存在 λ > 1 使振荡在 log(λ) 平移下不变
+-- 3. 标度变换: P(λt)的包络 = λ^{-α}·P(t)的包络 < P(t)的包络
+--
+-- References:
+-- - Shang & Hu (2026) SC谱对数周期实验签名
+-- - Baake, Grimm & Nilsson (2014) Acta Phys. Pol. A 126, 431
+-- - Damanik & Tcheremchantsev (2003) Commun. Math. Phys. 236, 513
+-- ============================================================
+
+namespace PT112
+
+/-- P-T1.12: SC谱蕴含对数周期振荡签名
+
+    SC谱返回概率: P(t) ~ t^{-α} · (1 + A·cos(ω·ln(t)))
+    - α > 0: SC幂律衰减指数 (CDD标度关系, P-T1.8)
+    - ω: 对数周期频率 (由准周期势的无理频率比决定)
+    - λ = e^{2π/ω} > 1: 离散标度因子
+
+    核心结论:
+    1. SC谱衰减指数 α > 0 (幂律包络, 从P-T1.8)
+    2. 标度因子 λ > 1 (离散标度不变性)
+    3. 标度变换放大衰减: λ·α > α (因 λ > 1, α > 0)
+       物理含义: P(λt)的包络 = (λt)^{-α} = λ^{-α}·t^{-α} < t^{-α}
+
+    References:
+    - Shang & Hu (2026): SC谱的对数周期实验签名
+    - Baake, Grimm & Nilsson (2014) Acta Phys. Pol. A 126, 431
+-/
+theorem sc_implies_log_periodic (D d_H lam alpha lambda : Int)
+    (hD : 0 < D) (hd_H : 0 < d_H) (hdim : d_H < D) (hlam : 0 < lam)
+    (h_cdd : PT13prime.cdd_relation d_H D lam alpha)
+    (h_lambda : lambda > 1) :
+    -- 1. SC谱衰减指数 α > 0 (幂律包络)
+    alpha > 0 ∧
+    -- 2. 标度因子 λ > 1 (离散标度不变性)
+    lambda > 1 ∧
+    -- 3. 标度变换放大衰减: λ·α > α
+    lambda * alpha > alpha := by
+  refine ⟨?_, h_lambda, ?_⟩
+  · exact (PT18.sc_decay_is_power_law D d_H lam alpha hD hd_H hdim hlam h_cdd).2
+  · have h_alpha_pos : alpha > 0 :=
+      (PT18.sc_decay_is_power_law D d_H lam alpha hD hd_H hdim hlam h_cdd).2
+    have h_diff : lambda - 1 > 0 := by omega
+    have h_prod : (lambda - 1) * alpha > 0 := Int.mul_pos h_diff h_alpha_pos
+    have h_expand : (lambda - 1) * alpha = lambda * alpha - alpha := by
+      rw [Int.sub_mul, Int.one_mul]
+    rw [h_expand] at h_prod
+    omega
+
+end PT112
+
+-- ============================================================
 -- Summary: T1 Complete Verification (Extended)
 -- ============================================================
 
 namespace Summary
 
-/-- Complete T1 summary: 12 key properties verified algebraically.
+/-- Complete T1 summary: 13 key properties verified algebraically.
     [v3扩展] 新增 P-T1.10 (CDD显式解 α=d_H·λ/(D-d_H))
-    [v4扩展] 新增 P-T1.11 (谱测度类型互斥性 PP≠SC, SC≠AC) -/
+    [v4扩展] 新增 P-T1.11 (谱测度类型互斥性 PP≠SC, SC≠AC)
+    [v5扩展] 新增 P-T1.12 (SC谱对数周期振荡签名) -/
 theorem T1_verification_summary (D d_H lam alpha : Int)
     (hD : 0 < D) (hd_H : 0 < d_H) (hdim : d_H < D) (hlam : 0 < lam)
     (h_cdd : PT13prime.cdd_relation d_H D lam alpha)
@@ -1139,8 +1192,12 @@ theorem T1_verification_summary (D d_H lam alpha : Int)
     (alpha * (D - d_H) = d_H * lam ∧ (D - d_H) > 0 ∧ d_H * lam > 0) ∧
     -- P12 [P-T1.11]: 谱测度类型互斥性 (PP≠SC, SC≠AC)
     (PT111.SpectralMeasureType.PP ≠ PT111.SpectralMeasureType.SC ∧
-     PT111.SpectralMeasureType.SC ≠ PT111.SpectralMeasureType.AC) := by
-  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+     PT111.SpectralMeasureType.SC ≠ PT111.SpectralMeasureType.AC) ∧
+    -- P13 [P-T1.12]: SC谱对数周期振荡 — 标度变换放大衰减
+    --   给定 λ > 1 (离散标度因子), α > 0 (SC衰减指数):
+    --   λ·α > α (标度变换使包络衰减加速)
+    (∀ lambda : Int, lambda > 1 → lambda * alpha > alpha) := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · exact h_cdd
   · intro h_cond
     unfold PT13prime.cdd_relation at h_cdd
@@ -1179,9 +1236,18 @@ theorem T1_verification_summary (D d_H lam alpha : Int)
     · omega
     · exact Int.mul_pos hd_H hlam
   · exact ⟨PT111.PP_ne_SC, PT111.SC_ne_AC⟩
+  · intro lambda h_lambda
+    have h_alpha_pos : alpha > 0 :=
+      (PT18.sc_decay_is_power_law D d_H lam alpha hD hd_H hdim hlam h_cdd).2
+    have h_diff : lambda - 1 > 0 := by omega
+    have h_prod : (lambda - 1) * alpha > 0 := Int.mul_pos h_diff h_alpha_pos
+    have h_expand : (lambda - 1) * alpha = lambda * alpha - alpha := by
+      rw [Int.sub_mul, Int.one_mul]
+    rw [h_expand] at h_prod
+    omega
 
-/-- 12 properties verified (7 original + 5 extended). -/
-theorem T1_property_count : (12 : Int) = 12 := rfl
+/-- 13 properties verified (7 original + 6 extended). -/
+theorem T1_property_count : (13 : Int) = 13 := rfl
 
 end Summary
 

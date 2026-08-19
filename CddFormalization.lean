@@ -19,3 +19,6 @@ import CddFormalization.Kakeya
 import CddFormalization.T1_SCCO
 import CddFormalization.T2_ReactiveFluid
 import CddFormalization.T2_Validation
+import CddFormalization.RatVerification
+import CddFormalization.Kolmogorov45
+import CddFormalization.MeasureTheory
