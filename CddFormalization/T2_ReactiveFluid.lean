@@ -1,3 +1,5 @@
+import CddFormalization.Utils
+
 /-! # T2: Unified Reactive Fluid Dynamics
 
     Formalization of the CDD Unified Reactive Fluid Framework.
@@ -9,6 +11,13 @@
 
     Level 1: Algebraic verification using Int arithmetic (no Mathlib).
     CDD Framework v27.64 · Phase 2
+
+    > **[K1 离散建模边界声明, 2026-09-08]** 本模块验证的是统一反应流体
+    > 标度律的**整数代数骨架**——γ = −ζ/(1−α) 的分子/分母 Int 符号
+    > 结构、反常耗散持续性的不等式链等，**非** Navier–Stokes/被动标量
+    > 方程在 ℝ 上的连续陈述（K41 恢复、Jensen 间隙、MHD 标度、
+    > L-H 模分岔等的连续形式），二者不等价。
+    > 所列 P-T2.* 物理标度律本身在本模块中**未被证明**。
 
     All proofs use ONLY core Lean4 tactics:
     - omega (linear integer arithmetic)
@@ -47,29 +56,8 @@ namespace CDD.T2
 -- Unused variable warnings have been resolved; global suppression removed.
 
 -- ============================================================
--- Helper Lemmas (extended from T1_SCCO.lean)
+-- Helper Lemmas (shared lemmas imported from CddFormalization.Utils)
 -- ============================================================
-
-/-- If a > 0 and b ≥ c, then a * b ≥ a * c. -/
-theorem mul_pos_le {a b c : Int} (ha : a > 0) (hbc : b ≥ c) :
-    a * b ≥ a * c := by
-  have h_diff : b - c ≥ 0 := by omega
-  have h_prod : a * (b - c) ≥ 0 := by
-    by_cases hz : b - c = 0
-    · rw [hz, Int.mul_zero]; omega
-    · have h_pos : b - c > 0 := by omega
-      have := Int.mul_pos ha h_pos
-      omega
-  rw [Int.mul_sub] at h_prod
-  omega
-
-/-- If a > 0 and b > c, then a * b > a * c (strict). -/
-theorem mul_pos_lt {a b c : Int} (ha : a > 0) (hbc : b > c) :
-    a * b > a * c := by
-  have h_diff : b - c > 0 := by omega
-  have h_prod : a * (b - c) > 0 := Int.mul_pos ha h_diff
-  rw [Int.mul_sub] at h_prod
-  omega
 
 -- ============================================================
 -- Part 1: SC→PP Coupling Scaling Law
@@ -109,7 +97,7 @@ theorem mul_pos_lt {a b c : Int} (ha : a > 0) (hbc : b > c) :
     This is the algebraic identity: γ = -ζ/(1-α). -/
 theorem gamma_formula {α_num α_den ζ_num ζ_den : Int}
     (hα_den : α_den > 0) (hζ_den : ζ_den > 0)
-    (hα_pos : α_num > 0) (hα_lt1 : α_num < α_den)
+    (_hα_pos : α_num > 0) (hα_lt1 : α_num < α_den)
     (hζ_pos : ζ_num > 0) :
     -- γ = -ζ/(1-α) = -(ζ_num/ζ_den) / ((α_den - α_num)/α_den)
     --   = -(ζ_num * α_den) / (ζ_den * (α_den - α_num))
@@ -413,7 +401,7 @@ theorem reynolds_sigma_K41 :
     meaning ε_Q(L₁) > ε_Q(L₂) (inverse scaling).
 -/
 theorem quantum_param_inverse_scaling {L1 L2 p_th : Int}
-    (hL1 : L1 > 0) (hL2 : L2 > 0) (hp : p_th > 0)
+    (_hL1 : L1 > 0) (_hL2 : L2 > 0) (hp : p_th > 0)
     (hL1_lt_L2 : L1 < L2) :
     L1 * p_th < L2 * p_th := by
   have h_diff : L2 - L1 > 0 := by omega
@@ -444,7 +432,7 @@ theorem quantum_param_inverse_scaling {L1 L2 p_th : Int}
     i.e., ε_Q² < ε_Q (quantum corrections are subleading).
 -/
 theorem pp_ac_quadratic_scaling {ε_num ε_den : Int}
-    (hε_den : ε_den > 0) (hε_num_pos : 0 < ε_num) (hε_lt1 : ε_num < ε_den) :
+    (_hε_den : ε_den > 0) (hε_num_pos : 0 < ε_num) (hε_lt1 : ε_num < ε_den) :
     ε_num * ε_num < ε_num * ε_den := by
   have h_diff : ε_den - ε_num > 0 := by omega
   have h_prod := Int.mul_pos hε_num_pos h_diff
@@ -479,7 +467,7 @@ theorem pp_ac_quadratic_scaling {ε_num ε_den : Int}
     We verify: if Γ_d * τ_dyn ≥ 3000, then Γ_d * τ_dyn > 1.
 -/
 theorem decoherence_classicality {Γ_d τ_dyn : Int}
-    (hΓ : Γ_d > 0) (hτ : τ_dyn > 0)
+    (_hΓ : Γ_d > 0) (_hτ : τ_dyn > 0)
     (h_product : Γ_d * τ_dyn ≥ 3000) :
     Γ_d * τ_dyn > 1 := by
   have : Γ_d * τ_dyn ≥ 3000 := h_product
@@ -566,8 +554,8 @@ theorem aniso_beta_parallel :
 -/
 
 /-- Ma→0 limit: D(0) = D₀ -/
-theorem compressible_D_ma_zero {D0 Ma_c : Int}
-    (hD0 : D0 ≥ 2) :
+theorem compressible_D_ma_zero {D0 _Ma_c : Int}
+    (_hD0 : D0 ≥ 2) :
     -- D(0) = D0 - (D0-2)*0/(Ma_c²+0) = D0 - 0 = D0
     -- (0/(anything) = 0 for our integer representation)
     D0 - (D0 - 2) * 0 = D0 := by
@@ -575,7 +563,7 @@ theorem compressible_D_ma_zero {D0 Ma_c : Int}
 
 /-- Ma→∞ limit: D(∞) = 2 -/
 theorem compressible_D_ma_infty {D0 : Int}
-    (hD0 : D0 ≥ 2) :
+    (_hD0 : D0 ≥ 2) :
     -- D(∞) = D0 - (D0-2) = 2
     D0 - (D0 - 2) = 2 := by omega
 
@@ -628,62 +616,79 @@ theorem incompressible_isotropic_recovery :
     (12 : Int) * 1 = (1 : Int) * 12 := by
   decide
 
-/-! ### 3.4 L-H Mode Bifurcation Prediction
+/-! ### 3.4 L-H Mode Bifurcation Prediction [C1 修正, 2026-08-30]
 
     Theorem 7.1-7.2: L-H mode transition = SC spectral measure bifurcation
 
-    Prediction: At L-H transition, ζ(2) jumps from ~0.68 to ~0.83
-    (increase of ~22%), and transport coefficient drops by 50-70%.
-
-    The bifurcation condition: D_critical such that ζ crosses a threshold.
+    [C1 修正] 原表述把 SC 谱维数 d_SC (0.68 → 0.83) 张冠李戴为结构
+    函数标度指数 ζ(2)。按数据快照如实重绑:
+    - d_SC 分岔 (F5_SC_bifurcation, 间接证据 Clairet et al. 2025):
+      d_SC 0.68 → 0.83 (d_SC_ratio = 1.2206, +22%), CDD 关系
+      D ≈ 5 − 3·d_SC 给出 D: 2.96 → 2.51 (耗散集更奇异 → 更好约束)。
+    - ζ(2) 方向: F3 记录 (间接) zeta_L = 0.544 > zeta_H = 0.527,
+      L→H 处 ζ **下降** (Δ = −0.017) — 与原断言 ζ_H > ζ_L 方向相反,
+      登记为待裁决冲突 (lh_mode_zeta_F3_direction_conflict);
+      F3 自陈 "indirect, 需直接结构函数测量数据"。
 -/
 
-/-- P-T2.10: L-H mode bifurcation — ζ(2) jump prediction.
+/-- P-T2.10: L-H mode bifurcation — SC spectral dimension d_SC jump.
 
-    Low confinement (L-mode): ζ_L ≈ 0.68 → D_L ≈ 5 - 3*0.68 = 2.96
-    High confinement (H-mode): ζ_H ≈ 0.83 → D_H ≈ 5 - 3*0.83 = 2.51
+    Low confinement (L-mode): d_SC ≈ 0.68 → D ≈ 5 - 3·0.68 = 2.96
+    High confinement (H-mode): d_SC ≈ 0.83 → D ≈ 5 - 3·0.83 = 2.51
 
     The bifurcation: D decreases from 2.96 to 2.51
     (dissipation set becomes MORE singular → better confinement)
 
-    ζ_H > ζ_L (H-mode has LARGER scaling exponent → SMOOTHER flow)
+    d_SC_H > d_SC_L [C1: 0.68/0.83 为 F5 的 d_SC, 非 ζ(2)]
 -/
-theorem lh_mode_zeta_increase :
-    -- ζ_H ≈ 83/100, ζ_L ≈ 68/100
-    -- ζ_H > ζ_L: 83 > 68
+theorem lh_mode_dSC_bifurcation :
+    -- d_SC_H ≈ 83/100, d_SC_L ≈ 68/100
+    -- d_SC_H > d_SC_L: 83 > 68
     -- Cross-reference: RatVerification.lean provides precise Rat representation:
-    --   zeta_high = mkRat 83 100, zeta_low = mkRat 17 25 (= 68/100)
-    --   See CDDRatVerification.lh_mode_percentage_increase for exact 15/68 ratio
+    --   dSC_high = mkRat 83 100, dSC_low = mkRat 17 25 (= 68/100)
+    --   See CDDRatVerification.lh_mode_dSC_percentage_increase for exact 15/68 ratio
     (83 : Int) > (68 : Int) := by decide
 
 /-- P-T2.10': Transport coefficient reduction at L-H transition.
 
-    Transport coefficient χ ∝ 1/ζ(2) (approximately)
-    χ_H / χ_L = ζ_L / ζ_H = 68/83 ≈ 0.82
+    [C1 修正] 原 χ ∝ 1/ζ(2) 的启发式推导基于误标数据 (0.68/0.83 实为
+    d_SC), 不再作为形式化依据; 输运下降的实证锚点是 F2 直接测量
+    (DIII-D/ASDEX-U/JET: 85-95% 降低, 加权 Z = 3.18σ 一致性通过)。
 
-    Reduction: 1 - 0.82 = 0.18 = 18%
-    (Conservative estimate; full prediction is 50-70% with multifractal correction)
-
-    We verify: 68 < 83 (so χ_H < χ_L, transport decreases).
+    此处验证的方向性: d_SC_L < d_SC_H (68 < 83), 与 F2 实测输运下降
+    方向一致 (d_SC 升 = SC 长程关联增强 = 输运通道受抑)。
 -/
 theorem lh_mode_transport_decrease :
-    -- χ_H / χ_L = ζ_L / ζ_H = 68/83 < 1
-    -- So transport coefficient DECREASES at L-H transition
+    -- d_SC ordering: 68 < 83, consistent with F2 measured transport
+    -- reduction (85-95%, direct measurement, Z = 3.18σ)
     (68 : Int) < (83 : Int) := by decide
 
-/-- P-T2.10'': Percentage increase in ζ(2) at L-H transition.
+/-- P-T2.10'': Percentage increase in d_SC at L-H transition.
 
-    (ζ_H - ζ_L) / ζ_L = (83 - 68) / 68 = 15/68 ≈ 22%
+    (d_SC_H - d_SC_L) / d_SC_L = (83 - 68) / 68 = 15/68 ≈ 22%
 
     Cross-check: 15 * 100 = 1500, 22 * 68 = 1496 ≈ 1500 (rounding)
-    More precisely: 15/68 = 0.2205... ≈ 22%
+    More precisely: 15/68 = 0.2205... ≈ 22% (F5: d_SC_ratio = 1.2206)
 -/
-theorem lh_mode_percentage_increase :
+theorem lh_mode_dSC_percentage_increase :
     -- (83 - 68) / 68 = 15/68
     -- 15 * 100 = 1500 (numerator of percentage)
     -- 22 * 68 = 1496 (check: 22% of 68)
     -- Difference: 1500 - 1496 = 4 (rounding error)
     (15 : Int) * 100 - (22 : Int) * 68 = 4 := by decide
+
+/-- P-T2.10''': F3 实测 ζ 方向冲突登记 [C1, 待裁决].
+
+    F3_scaling_exponent (间接数据): zeta_L = 0.544 > zeta_H = 0.527 —
+    L→H 转换处实测 ζ 下降, 与 CDD 早期断言 ζ_H > ζ_L (实为 d_SC 误标)
+    方向相反。F3 自陈 "indirect, 需直接结构函数测量数据" — 在直接
+    测量落地前, ζ 方向按数据如实登记, 不作理论方向性断言。
+
+    Cross-reference: CDDRatVerification.lh_mode_zeta_observed_direction_conflict
+-/
+theorem lh_mode_zeta_F3_direction_conflict :
+    -- ζ_L = 544 > ζ_H = 527 (milli-units, F3 记录值)
+    (544 : Int) > (527 : Int) := by decide
 
 -- ============================================================
 -- Part 4: Cross-Module Consistency Checks
@@ -786,20 +791,26 @@ theorem all_systems_classical_regime :
 - P-T2.9: D(Ma) formula (Ma→0 gives D₀, Ma→∞ gives 2)
 - P-T2.9': D₀=3 gives ζ=2/3 (K41)
 - P-T2.9'': D₀=2.9 gives ζ=0.7 (upper bound)
-- P-T2.10: L-H mode ζ increase (83 > 68)
-- P-T2.10': L-H transport decrease (68 < 83)
-- P-T2.10'': L-H percentage (~22%)
+- P-T2.10: L-H d_SC bifurcation (83 > 68) [C1: F5]
+- P-T2.10': L-H transport decrease (68 < 83, F2 实测锚定)
+- P-T2.10'': L-H d_SC percentage (~22%)
+- P-T2.10''': F3 实测 ζ 方向冲突登记 (544 > 527) [C1]
 
 ### Cross-Module (Part 4): 4 theorems
 - P-T2.C1: MHD-corrected γ (D=3 gives -1)
 - P-T2.C2: Quantum correction vanishes (0²=0)
 - P-T2.C3: All systems classical regime
 
-**Total: 23 theorems, 0 sorry, 0 admit**
+**Total: 34 theorems (^theorem 行计数), 0 sorry, 0 admit**
+[2026-08-30 C1 修正] 修正陈旧计数 "23" (实际 33) 并新增
+lh_mode_zeta_F3_direction_conflict → 34; 同步 d_SC/ζ 解耦重命名
+(lh_mode_zeta_increase → lh_mode_dSC_bifurcation,
+lh_mode_percentage_increase → lh_mode_dSC_percentage_increase)。
 
 Cross-reference: RatVerification.lean provides precise Rat representations for:
   - Damköhler γ = -ζ/(1-α): CDDRatVerification.gamma_K41_recovery
-  - L-H mode ζ: CDDRatVerification.lh_mode_zeta_increase
+  - L-H mode d_SC: CDDRatVerification.lh_mode_dSC_increase
+  - L-H ζ direction conflict: CDDRatVerification.lh_mode_zeta_observed_direction_conflict
   - Jensen coefficient: CDDRatVerification.jensen_n2_coefficient, jensen_n3_coefficient
 
 All proofs use only core Lean4 tactics (omega, decide, Int.mul_pos).
@@ -847,12 +858,14 @@ theorem T2_verification_summary :
     (((5 - 3) * 3) : Int) = 2 * 3 ∧
     -- P15: D₀=2.9 → ζ=0.7: (50-29)·10 = 7·30
     (((5 * 10 - 29) * 10) : Int) = 7 * (3 * 10) ∧
-    -- P16: L-H ζ increase: 83 > 68
+    -- P16: L-H d_SC bifurcation: 83 > 68 [C1: F5]
     (83 : Int) > 68 ∧
-    -- P17: L-H transport decrease: 68 < 83
+    -- P17: L-H transport decrease direction: 68 < 83 (F2 锚定)
     (68 : Int) < 83 ∧
-    -- P18: L-H percentage ≈ 22%: 15·100 - 22·68 = 4
+    -- P18: L-H d_SC percentage ≈ 22%: 15·100 - 22·68 = 4
     ((15 * 100 - 22 * 68) : Int) = 4 ∧
+    -- P18b: F3 实测 ζ 方向 (下降): 544 > 527 [C1 冲突登记]
+    (544 : Int) > 527 ∧
     -- P19: MHD γ(D=3) = -1: -(5-3)·1 = -1·2
     (-((5 - 3) * 1) : Int) = (-1) * 2 ∧
     -- P20: Decoherence classicality: 3000 > 1

@@ -1,0 +1,222 @@
+{
+ "_meta": {
+  "date": "2026-08-30 00:32:44",
+  "purpose": "改良清单 A4.2 (P1): 原始输入数据哈希锁定。登记对象 = cdd_p5_theory_advance_v28_4.py / cdd_p2_pipeline.py 的全部本地原始输入; DataProvenance.lean §6 为其 Lean 注册表。",
+  "method": "SHA256 (Python hashlib, 逐文件全量读取)",
+  "pipeline_scripts": [
+   "H:\\cdd_lean4\\scripts\\cdd_p5_theory_advance_v28_4.py",
+   "H:\\cdd_lean4\\scripts\\cdd_p2_pipeline.py"
+  ],
+  "frozen_snapshots_untouched": [
+   "H:\\cdd_p5_v28_4_results.json (SHA256 已登记于 DataProvenance §5, 不修改)",
+   "H:\\cdd_p2_p3_pipeline_results.json (同上)"
+  ],
+  "location_caveat": "ABL nc 提取件位于 H:\\tmp\\abl (临时目录), 持久层为 Inflow.zip (本清单已登记其哈希); 建议后续将 nc 提取件迁至 turbulence_obs_data。",
+  "total_files": 25,
+  "missing_files": 0,
+  "swuf_count_check": true
+ },
+ "A_swuf3d_cta1000": {
+  "dir": "H:\\turbulence_obs_data\\SWUF3D",
+  "glob": "turbulence__*__f_cta_1000.txt",
+  "pipeline_ref": "cdd_p5_theory_advance_v28_4.py L530-531 (SWUF_DIR glob)",
+  "expected_count": 19,
+  "window_diagnostic_passed": 9,
+  "files": [
+   {
+    "file": "turbulence__V0_11__I_11p5__20221007__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_11__I_11p5__20221007__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 15977846,
+    "sha256": "46F5E4DB9B17E7098A022D299F84A69D728AAB020E424F66DEDAD0DD369251ED"
+   },
+   {
+    "file": "turbulence__V0_11__I_11p5__20221012__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_11__I_11p5__20221012__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 16141010,
+    "sha256": "1A9273103EA2F9CCE2892E3E6691FDD3D2F355093CA786269BAAC9CF0586910D"
+   },
+   {
+    "file": "turbulence__V0_11__I_5p5__20221012__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_11__I_5p5__20221012__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 16139949,
+    "sha256": "23748CC4227956294E974019C72C8AD6E6D871525EA8B32048D8DFBF9F77C847"
+   },
+   {
+    "file": "turbulence__V0_13__I_11p5__20221007__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_13__I_11p5__20221007__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 16145994,
+    "sha256": "836377C809C30DC413AEF1473589ADADBF53D8F299C89A95FAB37B4ECD205444"
+   },
+   {
+    "file": "turbulence__V0_13__I_11p5__20221012__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_13__I_11p5__20221012__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 16275979,
+    "sha256": "A60BBEAD1BC1B52120F2044A36D075E3061237ED6E5FCD5A6F74FF573D2AA908"
+   },
+   {
+    "file": "turbulence__V0_15__I_11p5__20221007__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_15__I_11p5__20221007__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 16252091,
+    "sha256": "747FD9F7333800AE0D01E523AEEFA5603D4E749008BF734CBD75A9480B019C66"
+   },
+   {
+    "file": "turbulence__V0_15__I_11p5__20221012__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_15__I_11p5__20221012__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 16457168,
+    "sha256": "868024EB6B46744FE9DD315E4C2D2F6FEC114D4EF8D165F504BEBB10E0117F9D"
+   },
+   {
+    "file": "turbulence__V0_15__I_5p5__20221012__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_15__I_5p5__20221012__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 15266046,
+    "sha256": "A0D48E4FC70ED957724AB7162E8A1D7CBF36FBD0335CEC043D2C0B3105A2ECD7"
+   },
+   {
+    "file": "turbulence__V0_17__I_11p5__20221007__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_17__I_11p5__20221007__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 16542932,
+    "sha256": "EF97A75E8F0BB77E08C6C1D0F9539BC8B59FAC46CCAC5EC256F1008EA1FB4BB4"
+   },
+   {
+    "file": "turbulence__V0_17__I_11p5__20221012__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_17__I_11p5__20221012__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 16146383,
+    "sha256": "6261283B6904307DDECA4F76AACFFA310E3884FC1F25DA5FE706EE4AF9B115C4"
+   },
+   {
+    "file": "turbulence__V0_5__I_11p5__20221007__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_5__I_11p5__20221007__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 15207810,
+    "sha256": "F898A7DC1918159366F63B879F43C75C07772308716AB658AAA00EB5586C3A5E"
+   },
+   {
+    "file": "turbulence__V0_5__I_11p5__20221011__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_5__I_11p5__20221011__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 15948724,
+    "sha256": "80ECBA04590632F2C6C1EBAB2D6848314EF065D77C2C54D30EDFD83897F05E0F"
+   },
+   {
+    "file": "turbulence__V0_7__I_11p5__20221007__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_7__I_11p5__20221007__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 16142251,
+    "sha256": "B82A96C53EFDC58381B857634FEAB95552F056584875AD7614A8CA6D459CEB15"
+   },
+   {
+    "file": "turbulence__V0_7__I_11p5__20221011__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_7__I_11p5__20221011__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 16130472,
+    "sha256": "BECC38DDA55880D7BE85B645B205082596CA5B592712FD55CA0AB730674E8D68"
+   },
+   {
+    "file": "turbulence__V0_9__I_11p5__20221007__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_9__I_11p5__20221007__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 15980353,
+    "sha256": "874F8C7CB347B49CD958EEE8CB753C014D327305D7A2B0C6455822429BC4548F"
+   },
+   {
+    "file": "turbulence__V0_9__I_11p5__20221011__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_9__I_11p5__20221011__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 16130519,
+    "sha256": "4C1E362D040E6DB44C581519E8876F4C2CD6EEFE5F017E504867328FC226EDBC"
+   },
+   {
+    "file": "turbulence__V0_fan__I_15p0__20221007__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_fan__I_15p0__20221007__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 15952125,
+    "sha256": "FC64E831F1F9D3A3A606CA8068201A2380CB90B625EC8E0D7AB8158DE6CD003A"
+   },
+   {
+    "file": "turbulence__V0_fan__I_15p0__20221011__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_fan__I_15p0__20221011__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 15731481,
+    "sha256": "655D99AEB76E264A4979EBBE504BB66E8B77A90AFD8C30F4BF259BCC4873E56F"
+   },
+   {
+    "file": "turbulence__V0_fan__I_9p5__20221011__f_cta_1000.txt",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\turbulence__V0_fan__I_9p5__20221011__f_cta_1000.txt",
+    "role": "SWUF-3D 工况记录 (CTA 1000 Hz)",
+    "bytes": 15848628,
+    "sha256": "834151B9BB599A7CBFB2EF24F24D398E3789841C6E53432B6CA02FE919108694"
+   }
+  ]
+ },
+ "B_abl_windtunnel_nc": {
+  "pipeline_ref": "cdd_p5_theory_advance_v28_4.py L47-51 (ABL_NC dict)",
+  "files": [
+   {
+    "file": "DATA_test_4.nc",
+    "path": "H:\\tmp\\abl\\DATA_test_4.nc",
+    "role": "ABL Extreme-TI (35 探针)",
+    "bytes": 128649468,
+    "sha256": "BE6882D748CA58C773B7D01876FB93C3453B88994871CA5D0C868CD7A767EFA2"
+   },
+   {
+    "file": "DATA_test_1.nc",
+    "path": "H:\\tmp\\abl\\DATA_test_1.nc",
+    "role": "ABL Mod-TI (875 探针)",
+    "bytes": 1728161985,
+    "sha256": "3C6A0811DD49D6589478679DE69FC3E1CF75A985C7663764F461A1BF26F5F9BF"
+   },
+   {
+    "file": "DATA_test_2.nc",
+    "path": "H:\\tmp\\abl\\DATA_test_2.nc",
+    "role": "ABL High-TI (480 探针)",
+    "bytes": 2187041889,
+    "sha256": "08EAA92F795C9CAFCE5FC928146DE0508467351CF614ECA6C8956A908C07ED02"
+   }
+  ]
+ },
+ "C_jhtdb_1024coarse_ess_json": {
+  "pipeline_ref": "cdd_p2_pipeline.py L39 (JHTDB_JSON)",
+  "raw_data_status": "JHTDB isotropic1024coarse 原始速度场不在本地 (来源 http://turbulence.idies.jhu.edu); 本地输入为 12 子体积 ESS zq 谱统计 JSON。",
+  "files": [
+   {
+    "file": "cdd_jhtdb_verification_20260726_053419.json",
+    "path": "H:\\cdd_d3_jhtdb_results\\cdd_jhtdb_verification_20260726_053419.json",
+    "role": "JHTDB 1024coarse 12 子体积 ESS 统计 (P2 输入)",
+    "bytes": 3156,
+    "sha256": "268C3C5A3A577A728E21C5A244D85105487E85E19BD23C88462BC2BD9952F019"
+   }
+  ]
+ },
+ "D_source_archives": {
+  "files": [
+   {
+    "file": "dlr_swuf3d_windtunnel.zip",
+    "path": "H:\\turbulence_obs_data\\SWUF3D\\dlr_swuf3d_windtunnel.zip",
+    "role": "SWUF3D 分发包 (DLR)",
+    "bytes": 68812001,
+    "sha256": "E5DDDEDE2599B50AA80C3F17886E6388EDE4ECAFC121D9B3549F4E3729CAE576"
+   },
+   {
+    "file": "Inflow.zip",
+    "path": "H:\\turbulence_obs_data\\ABL_WindTunnel\\Inflow.zip",
+    "role": "ABL 分发包 (TUM Inflow)",
+    "bytes": 2856078327,
+    "sha256": "D0BBB3E500A2C3424746FAF066090C41337A2FD2B1E2519B578C4299884CDAC5"
+   }
+  ]
+ },
+ "E_not_local_literature_only": {
+  "JHTDB_32768": "文献快照 α_u = 0.380 ± 0.005 (P5 JSON A 段: 'Phase 1 ESS + JHTDB 32768³ 文献快照, 原始数据不在本地'); 溯源链止于文献值, 无本地文件可哈希。",
+  "Ishihara2009": "综述值 α_u = 0.36 ± 0.04 (Annu. Rev. Fluid Mech. 41, 165), 文献参数。"
+ }
+}

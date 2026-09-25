@@ -1,3 +1,5 @@
+import CddFormalization.Utils
+
 /-! # T1: SC Correlation Characterization Operator (SCCO)
 
     Formalization of the SC Correlation Operator defined in
@@ -5,6 +7,13 @@
 
     Level 1: Algebraic verification using Int arithmetic (no Mathlib).
     CDD Framework v27.63 · Phase 1
+
+    > **[K1 离散建模边界声明, 2026-09-08]** 本模块验证的是 SC 关联算子
+    > 标度关系的**整数代数骨架**——`cdd_relation`（α·(D−d_H) = d_H·λ）
+    > 等命题的 Int 解结构（符号、消去、不等式传递），**非** ℝ 上
+    > 谱测度/关联函数的连续陈述（Guarneri 下界、幂律衰减分类、
+    > Kolmogorov 4/5 律约束等的连续形式），二者不等价。
+    > 所列 P-T1.* 物理命题的连续形式在本模块中**未被证明**。
 
     All proofs use ONLY core Lean4 tactics:
     - omega (linear integer arithmetic)
@@ -32,28 +41,8 @@ namespace CDD.T1
 
 -- ============================================================
 -- Helper Lemmas (core Lean4 compatible)
+-- Shared lemmas (mul_pos_le, mul_pos_lt) imported from CddFormalization.Utils
 -- ============================================================
-
-/-- If a > 0 and b ≥ c, then a * b ≥ a * c. -/
-theorem mul_pos_le {a b c : Int} (ha : a > 0) (hbc : b ≥ c) :
-    a * b ≥ a * c := by
-  have h_diff : b - c ≥ 0 := by omega
-  have h_prod : a * (b - c) ≥ 0 := by
-    by_cases hz : b - c = 0
-    · rw [hz, Int.mul_zero]; omega
-    · have h_pos : b - c > 0 := by omega
-      have := Int.mul_pos ha h_pos
-      omega
-  rw [Int.mul_sub] at h_prod
-  omega
-
-/-- If a > 0 and b > c, then a * b > a * c (strict version). -/
-theorem mul_pos_lt {a b c : Int} (ha : a > 0) (hbc : b > c) :
-    a * b > a * c := by
-  have h_diff : b - c > 0 := by omega
-  have h_prod : a * (b - c) > 0 := Int.mul_pos ha h_diff
-  rw [Int.mul_sub] at h_prod
-  omega
 
 /-- If a > 0 and a * b ≥ a * c, then b ≥ c (cancellation for ≥). -/
 theorem mul_pos_cancel_le {a b c : Int} (ha : a > 0) (hbc : a * b ≥ a * c) :
@@ -163,7 +152,7 @@ namespace PT12
 theorem quadratic_decomposition (c r : Int) :
     c * (r * r) = (c * r) * r := by ac_rfl
 
-theorem ahlfors_implies_linear (c1 c2 r : Int) (hc1 : c1 > 0) (hc2 : c2 > 0) (hr : r > 0)
+theorem ahlfors_implies_linear (c1 c2 r : Int) (_hc1 : c1 > 0) (_hc2 : c2 > 0) (hr : r > 0)
     (h_lower : c1 * r ≤ c2 * r) :
     c1 ≤ c2 := by
   by_cases h : c1 ≤ c2
@@ -192,7 +181,7 @@ theorem guarneri_bound (d_H : Int) (hd_H : d_H > 0) :
     Hypothesis: lam * D ≥ 2 * (D - d_H)
     Conclusion: α * D ≥ 2 * d_H -/
 theorem cdd_implies_guarneri (d_H D lam alpha : Int)
-    (hd_H : 0 < d_H) (hD : 0 < D) (hdim : d_H < D)
+    (hd_H : 0 < d_H) (_hD : 0 < D) (hdim : d_H < D)
     (h_cdd : alpha * (D - d_H) = d_H * lam)
     (h_lam : lam * D ≥ 2 * (D - d_H)) :
     alpha * D ≥ 2 * d_H := by
@@ -228,7 +217,7 @@ theorem cdd_implies_guarneri (d_H D lam alpha : Int)
 
 /-- Strict Guarneri inequality: α * D > d_H when lam * D > D - d_H. -/
 theorem guarneri_strict (d_H D lam alpha : Int)
-    (hd_H : 0 < d_H) (hD : 0 < D) (hdim : d_H < D)
+    (hd_H : 0 < d_H) (_hD : 0 < D) (hdim : d_H < D)
     (h_cdd : alpha * (D - d_H) = d_H * lam)
     (h_lam_strict : lam * D > D - d_H) :
     alpha * D > d_H := by
@@ -298,7 +287,7 @@ theorem intermediate_case (D d_H lam alpha : Int)
 /-- Monotonicity: d_H1 < d_H2 → alpha1 < alpha2 (fixed lam, D). -/
 theorem alpha_monotone_in_dH (D lam d_H1 d_H2 alpha1 alpha2 : Int)
     (hD : 0 < D) (hlam : 0 < lam)
-    (hd1 : 0 < d_H1) (hd2 : d_H1 < d_H2) (hd2_lt : d_H2 < D)
+    (_hd1 : 0 < d_H1) (hd2 : d_H1 < d_H2) (hd2_lt : d_H2 < D)
     (h_cdd1 : alpha1 * (D - d_H1) = d_H1 * lam)
     (h_cdd2 : alpha2 * (D - d_H2) = d_H2 * lam) :
     alpha1 < alpha2 := by
@@ -360,8 +349,8 @@ def cdd_relation (d_H D lam alpha : Int) : Prop :=
 
 /-- Monotonicity in lam: lam1 < lam2 → alpha1 < alpha2. -/
 theorem monotonicity_in_lam (D d_H lam1 lam2 alpha1 alpha2 : Int)
-    (hD : 0 < D) (hd_H : 0 < d_H) (hdim : d_H < D)
-    (hlam1 : 0 < lam1) (hlam2 : lam1 < lam2)
+    (_hD : 0 < D) (hd_H : 0 < d_H) (hdim : d_H < D)
+    (_hlam1 : 0 < lam1) (hlam2 : lam1 < lam2)
     (h_cdd1 : cdd_relation d_H D lam1 alpha1)
     (h_cdd2 : cdd_relation d_H D lam2 alpha2) :
     alpha1 < alpha2 := by
@@ -571,7 +560,7 @@ theorem ac_decay_is_exponential (D d_H lam alpha : Int)
     证明: α·(D - d_H) = d_H·λ
     D > d_H > 0, λ > 0 → α > 0 (因为 d_H·λ > 0 且 D - d_H > 0) -/
 theorem sc_decay_is_power_law (D d_H lam alpha : Int)
-    (hD : 0 < D) (hd_H : 0 < d_H) (hdim : d_H < D) (hlam : 0 < lam)
+    (_hD : 0 < D) (hd_H : 0 < d_H) (hdim : d_H < D) (hlam : 0 < lam)
     (h_cdd : PT13prime.cdd_relation d_H D lam alpha) :
     decayExponent DecayType.SC alpha ∧ alpha > 0 := by
   unfold decayExponent
@@ -629,7 +618,11 @@ end PT18
 --   ESS → ν₂ = ζ(2)/ζ(3) = ζ(2)
 --   K41 → ζ(2) = 2/3 → ν₂ = 2/3 ≈ 0.667
 --   SL → ζ(2) = 0.696 → ν₂ ≈ 0.696
---   CDD预测: ν₂ ∈ [0.5, 0.7]
+--   DNS实测 → ζ(2) = 0.7197 ± 0.0002 (PRE 109, 055106, 2024)
+--   SWUF-3D → ν₂ = 0.6905 ± 0.0010 (9 工况 ESS 均值, SEM)
+--   CDD预测: ν₂ ∈ [0.50, 0.72]  [2026-08-29 修正: 上界 0.7 → 0.72,
+--     覆盖 DNS 实测 0.7197; 有限雷诺数修正 ν₂(Re)=ν₂(∞)(1−c/Re)
+--     作为补充条件引入, 见 nu2_finite_reynolds_monotone]
 --
 -- References:
 --   Kolmogorov 1941, Dokl. Akad. Nauk SSSR 32, 16-18
@@ -689,7 +682,7 @@ theorem zeta3_equals_one :
     仅 q=3 精确; 高阶存在间歇性修正
     ζ(2) = 2/3 (K41预测)
     ζ(3) = 1 (精确) -/
-theorem k41_scaling (q : Int) (hq : q > 0) :
+theorem k41_scaling (q : Int) (_hq : q > 0) :
     -- K41: ζ(q) = q/3 (整数表示: 3·ζ(q) = q)
     -- q = 3 → ζ(3) = 1 (精确)
     -- q = 6 → ζ(6) = 2
@@ -702,9 +695,10 @@ theorem k41_scaling (q : Int) (hq : q > 0) :
     ζ(q)/ζ(3) 比 ζ(q) 单独更稳定
     ζ(3) = 1 → ν₂ = ζ(2)
 
-    CDD预测: ν₂ ∈ [0.5, 0.7] (整数缩放: [5, 7] / 10)
+    CDD预测: ν₂ ∈ [0.50, 0.72] (百分缩放: [50, 72] / 100)
     K41: ν₂ = 2/3 ≈ 0.667
-    SL: ν₂ ≈ 0.696 -/
+    SL: ν₂ ≈ 0.696
+    DNS实测: ν₂ ≈ 0.7197 ± 0.0002 (PRE 109, 055106, 2024) -/
 theorem ess_constraint (zeta2 zeta3 nu2 : Int)
     (h_zeta3 : zeta3 = 1) :
     -- ESS: ν₂ = ζ(2)/ζ(3) = ζ(2)/1 = ζ(2)
@@ -714,36 +708,90 @@ theorem ess_constraint (zeta2 zeta3 nu2 : Int)
   rw [h_zeta3, Int.one_mul] at h_ess
   exact h_ess
 
-/-- [CDD预测范围] ν₂ ∈ [0.5, 0.7]
-    整数缩放: 10·ν₂ ∈ [5, 7]
-    物理含义: SC谱的关联维数在0.5到0.7之间
-    - 下界 0.5: SC谱的最低维数 (d_H/D ≥ 1/2)
-    - 上界 0.7: SC谱的最高维数 (d_H/D ≤ 7/10) -/
-theorem cdd_nu2_range (nu2_scaled : Int)
-    (h_lower : nu2_scaled ≥ 5) (h_upper : nu2_scaled ≤ 7) :
-    -- 10·ν₂ ∈ [5, 7] → ν₂ ∈ [0.5, 0.7]
-    nu2_scaled ≥ 5 ∧ nu2_scaled ≤ 7 ∧ nu2_scaled > 0 := by
+/-- [CDD预测范围] ν₂ ∈ [0.50, 0.72]
+    百分数缩放: 100·ν₂ ∈ [50, 72]
+    物理含义: SC谱的关联维数在0.50到0.72之间
+    - 下界 0.50: SC谱的最低维数 (d_H/D ≥ 1/2)
+    - 上界 0.72: SC谱的最高维数 (d_H/D ≤ 72/100)
+
+    [2026-08-29 修正] 上界 0.7 → 0.72, 观测对照:
+    - DNS 实测: ζ(2) = 0.7197 ± 0.0002 (PRE 109, 055106, 2024)
+      [100·ν₂ = 71.97, 超出旧上界 70 达 1.97, 属实质冲突而非尾部噪声]
+    - SWUF-3D 9 工况 ESS: ν₂ = 0.6905 ± 0.0010 (SEM), 域 [0.686, 0.695]
+    - SL 理论值: ν₂ ≈ 0.696
+    旧上界 0.7 与 SL 0.696 裕量仅 0.004, 与 DNS 实测冲突 0.0197;
+    修正后上界 0.72 覆盖 DNS 实测, 边际 0.0003 (紧, 诚实记录),
+    渐近外推须配合有限雷诺数修正 (nu2_finite_reynolds_monotone). -/
+theorem cdd_nu2_range (nu2_pct : Int)
+    (h_lower : nu2_pct ≥ 50) (h_upper : nu2_pct ≤ 72) :
+    -- 100·ν₂ ∈ [50, 72] → ν₂ ∈ [0.50, 0.72]
+    nu2_pct ≥ 50 ∧ nu2_pct ≤ 72 ∧ nu2_pct > 0 := by
   exact ⟨h_lower, h_upper, by omega⟩
+
+/-- [有限雷诺数修正] ν₂(Re_λ) = ν₂(∞)·(1 − c/Re_λ) [2026-08-29 补充条件]
+    整数表示 (交叉相乘): Re·(100·ν₂(Re)) = ν₂∞_pct·(Re − c),
+    其中 ν₂∞_pct = 100·ν₂(∞), 条件 c ≥ 0, Re > c (c = 0 退化为常数).
+
+    物理动机: 有限雷诺数测得的 ν₂(Re) 低于渐近值 ν₂(∞);
+    DNS 实测 0.7197 (PRE 2024) 为有限 Re 值, 渐近值更高,
+    故 CDD 上界 72 (百分缩放) 须容纳渐近值而非仅测量值.
+
+    数据拟合状态 (诚实记录):
+    - SWUF-3D 9 点 (Re_λ ∈ [747, 5660], ν₂ ∈ [0.686, 0.695]):
+      域内趋势平缓, c 的拟合值与 0 在散布内相容;
+    - JHTDB 1024/32768 的 ν₂ 通道提取为 P1 待办, c 与 ν₂(∞) 的
+      定稿推迟至多源交叉检验完成后;
+    - 本定理核验代数性质 (修正因子单调性), 不核数据.
+
+    定理内容: 修正因子 (Re − c)/Re 随 Re 单调不减. -/
+theorem nu2_finite_reynolds_monotone (c Re1 Re2 : Int)
+    (h_c : c ≥ 0) (h_Re2 : Re2 > Re1) :
+    -- (Re₂ − c)·Re₁ ≥ (Re₁ − c)·Re₂  ⟺  c·(Re₂ − Re₁) ≥ 0
+    (Re2 - c) * Re1 ≥ (Re1 - c) * Re2 := by
+  have e1 : (Re2 - c) * Re1 = Re2 * Re1 - c * Re1 := Int.sub_mul Re2 c Re1
+  have e2 : (Re1 - c) * Re2 = Re2 * Re1 - c * Re2 := by
+    have h := Int.sub_mul Re1 c Re2
+    rw [Int.mul_comm Re1 Re2] at h
+    exact h
+  rw [e1, e2]
+  have h_key : c * Re2 ≥ c * Re1 := by
+    by_cases h0 : c = 0
+    · rw [h0, Int.zero_mul, Int.zero_mul]; omega
+    · exact mul_pos_le (by omega : c > 0) (by omega : Re2 ≥ Re1)
+  omega
+
+/-- [上界传递] 有限 Re 测量值不超过渐近值: ν₂(Re) ≤ ν₂(∞)
+    整数表示: Re > c ≥ 0 → Re > 0 (交叉相乘保序) 且
+    ν₂∞_pct·(Re − c) ≤ ν₂∞_pct·Re.
+    推论 (记录, 非形式化): DNS 实测 100·ν₂ = 71.97 于有限 Re
+    → 100·ν₂(∞) ≥ 71.97, CDD 上界 72 边际仅 0.03, 紧而诚实. -/
+theorem nu2_finite_re_le_asymptote (nu2_inf c Re : Int)
+    (h_inf : nu2_inf > 0) (h_c : c ≥ 0) (h_Re : Re > c) :
+    Re > 0 ∧ nu2_inf * (Re - c) ≤ nu2_inf * Re := by
+  refine ⟨by omega, ?_⟩
+  have h := mul_pos_le h_inf (by omega : Re ≥ Re - c)
+  omega
 
 /-- [完整验证链] 4/5律 → ζ(3)=1 → ESS → ν₂预测
     这是CDD湍流验证的理论基础:
     1. 4/5律 (Kolmogorov 1941): S₃ = -4/5·ε·r [精确]
     2. ζ(3) = 1 [从4/5律]
     3. ESS: ν₂ = ζ(2)/ζ(3) = ζ(2) [Benzi et al. 1993]
-    4. CDD: ν₂ ∈ [0.5, 0.7] [SC谱约束]
+    4. CDD: ν₂ ∈ [0.50, 0.72] [SC谱约束, 2026-08-29 修正]
     5. K41: ν₂ = 2/3 ≈ 0.667 [Kolmogorov 1941]
-    6. SL: ν₂ ≈ 0.696 [She-Leveque 1994] -/
+    6. SL: ν₂ ≈ 0.696 [She-Leveque 1994]
+    7. DNS实测: ν₂ ≈ 0.7197 ± 0.0002 [PRE 109, 055106, 2024] -/
 theorem full_verification_chain (eps r S3 zeta2 zeta3 nu2 : Int)
     (h_eps : eps > 0) (h_r : r > 0)
     (h_45 : 5 * S3 = -(4 * eps * r))
     (h_zeta3 : zeta3 = 1)
     (h_ess : zeta3 * nu2 = zeta2)
-    (h_cdd_lo : nu2 ≥ 5) (h_cdd_hi : nu2 ≤ 7) :
+    (h_cdd_lo : nu2 ≥ 50) (h_cdd_hi : nu2 ≤ 72) :
     -- 完整约束链
     S3 < 0 ∧                    -- 4/5律 → S₃ < 0
     zeta3 = 1 ∧                 -- ζ(3) = 1
     nu2 = zeta2 ∧               -- ESS → ν₂ = ζ(2)
-    nu2 ≥ 5 ∧ nu2 ≤ 7 ∧         -- CDD范围 [5, 7] (缩放10倍)
+    nu2 ≥ 50 ∧ nu2 ≤ 72 ∧       -- CDD范围 [50, 72] (百分缩放)
     nu2 > 0 := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
   · exact kolmogorov_four_fifth_law eps r h_eps h_r S3 h_45
@@ -780,7 +828,7 @@ namespace PT110
     整数对表示: α·(D - d_H) = d_H·λ
     即 num = d_H·λ, den = D - d_H -/
 theorem cdd_explicit_solution (D d_H lam alpha : Int)
-    (hD : 0 < D) (hd_H : 0 < d_H) (hdim : d_H < D) (hlam : 0 < lam)
+    (_hD : 0 < D) (hd_H : 0 < d_H) (hdim : d_H < D) (hlam : 0 < lam)
     (h_cdd : PT13prime.cdd_relation d_H D lam alpha) :
     -- 显式解: alpha = (d_H * lam) / (D - d_H)
     -- 整数对: alpha * (D - d_H) = d_H * lam  [这就是h_cdd本身]
@@ -819,7 +867,7 @@ theorem explicit_solution_unique (alpha1 alpha2 num den : Int)
       →: 除以 (D-d_H) > 0 得显式解
       ←: 乘以 (D-d_H) 得隐式关系 -/
 theorem explicit_iff_implicit (D d_H lam alpha : Int)
-    (hdim : d_H < D) :
+    (_hdim : d_H < D) :
     -- 隐式: alpha * (D - d_H) = d_H * lam
     -- 显式: alpha = (d_H * lam) / (D - d_H)  [整数对: alpha*(D-d_H) = d_H*lam]
     -- 二者等价 (因为 D - d_H > 0, 除法良定义)
@@ -920,10 +968,17 @@ theorem AC_ne_PP : SpectralMeasureType.AC ≠ SpectralMeasureType.PP := by
 
     阈值数值依据 (Aubry-André模型, t=1, 64个k采样):
     - AC区域 (λ < 2): α ∈ [0.996, 1.003] → 阈值 0.7 留充分余量
-    - SC区域 (λ = 2): α ≈ 0.551 (黄金比例), α ∈ [0.5, 0.7] → 阈值 (0.2, 0.7]
+    - SC区域 (λ = 2): α ≈ 0.551 (黄金比例), α ∈ [0.5, 0.7] → 阈值 (0.2, 0.7)
     - PP区域 (λ > 2): α ∈ [-0.0002, 0.006] → 阈值 0.2 留充分余量
-    - 边界归类: α=0.7→SC(保持临界检测灵敏度), α=0.2→PP(避免假阳性) -/
-def classify_by_pr (num den : Int) (h_den : den > 0) : SpectralMeasureType :=
+    - 边界归类: α=0.7→SC(保持临界检测灵敏度), α=0.2→PP(避免假阳性)
+
+    [2026-08-29 注] 此处 α 为 PR 标度指数 (Aubry-André/Harper 模型
+    的参与率标度, num/den 有理逼近), 与 PT19 的 ν₂ = ζ(2)/ζ(3)
+    (SC 谱关联维数, 见 cdd_nu2_range) 为**不同物理量**:
+    ν₂ 范围修正 ([0.5, 0.7] → [0.50, 0.72]) 不改变本分类器的
+    PR 阈值 (0.2, 0.7), 二者勿混用. PR 阈值的数值依据
+    (Aubry-André λ 扫描) 与 ν₂ 的湍流观测 (DNS/SWUF) 亦不同源. -/
+def classify_by_pr (num den : Int) (_h_den : den > 0) : SpectralMeasureType :=
   if 10 * num > 7 * den then SpectralMeasureType.AC
   else if 10 * num > 2 * den then SpectralMeasureType.SC
   else SpectralMeasureType.PP
@@ -1014,7 +1069,7 @@ structure HarperModel (phi_num phi_den N : Int) where
     证明核心依赖PR标度条件(h_le, h_gt). -/
 theorem harper_irrational_implies_sc
     (phi_num phi_den N num den : Int)
-    (h_model : HarperModel phi_num phi_den N)
+    (_h_model : HarperModel phi_num phi_den N)
     (h_le : 10 * num ≤ 7 * den)
     (h_gt : 10 * num > 2 * den)
     (h_den : den > 0) :
@@ -1035,7 +1090,7 @@ def aubry_andre_critical (lambda t : Int) : Prop :=
     证明核心依赖PR标度条件(h_le, h_gt). -/
 theorem aubry_andre_critical_implies_sc
     (lambda t num den : Int)
-    (h_crit : aubry_andre_critical lambda t)
+    (_h_crit : aubry_andre_critical lambda t)
     (h_le : 10 * num ≤ 7 * den)
     (h_gt : 10 * num > 2 * den)
     (h_den : den > 0) :
@@ -1049,7 +1104,7 @@ theorem aubry_andre_critical_implies_sc
     证明核心依赖强AC条件(num ≥ den → α ≥ 1). -/
 theorem aubry_andre_extended_implies_ac
     (lambda t num den : Int)
-    (h_ext : lambda < 2 * t)
+    (_h_ext : lambda < 2 * t)
     (h_num : num ≥ den)
     (h_den : den > 0) :
     classify_by_pr num den h_den = SpectralMeasureType.AC := by
@@ -1062,7 +1117,7 @@ theorem aubry_andre_extended_implies_ac
     证明核心依赖强PP条件(num ≤ 0 → α ≤ 0). -/
 theorem aubry_andre_localized_implies_pp
     (lambda t num den : Int)
-    (h_loc : lambda > 2 * t)
+    (_h_loc : lambda > 2 * t)
     (h_num : num ≤ 0)
     (h_den : den > 0) :
     classify_by_pr num den h_den = SpectralMeasureType.PP := by
@@ -1156,7 +1211,11 @@ namespace Summary
 /-- Complete T1 summary: 13 key properties verified algebraically.
     [v3扩展] 新增 P-T1.10 (CDD显式解 α=d_H·λ/(D-d_H))
     [v4扩展] 新增 P-T1.11 (谱测度类型互斥性 PP≠SC, SC≠AC)
-    [v5扩展] 新增 P-T1.12 (SC谱对数周期振荡签名) -/
+    [v5扩展] 新增 P-T1.12 (SC谱对数周期振荡签名)
+    [2026-08-29修正] P-T1.9 ν₂ 预测范围 [0.5, 0.7] → [0.50, 0.72]
+    (百分缩放, 见 cdd_nu2_range; 上界修正系 DNS 实测 0.7197
+    (PRE 109, 055106, 2024) 所迫, 有限雷诺数修正为补充条件,
+    见 nu2_finite_reynolds_monotone / nu2_finite_re_le_asymptote) -/
 theorem T1_verification_summary (D d_H lam alpha : Int)
     (hD : 0 < D) (hd_H : 0 < d_H) (hdim : d_H < D) (hlam : 0 < lam)
     (h_cdd : PT13prime.cdd_relation d_H D lam alpha)

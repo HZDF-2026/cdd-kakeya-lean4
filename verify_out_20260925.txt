@@ -1,0 +1,28 @@
+﻿Basic                  exit=0 errors=0 warnings=0 sorry=0
+Utils                  exit=0 errors=0 warnings=0 sorry=0
+Kakeya                 exit=0 errors=0 warnings=0 sorry=0
+Kolmogorov45           exit=0 errors=0 warnings=0 sorry=0
+MeasureTheory          exit=0 errors=0 warnings=0 sorry=0
+RatVerification        exit=0 errors=0 warnings=0 sorry=0
+RealPhysics            exit=0 errors=0 warnings=0 sorry=0
+T1_SCCO                exit=0 errors=0 warnings=0 sorry=0
+T2_ReactiveFluid       exit=0 errors=0 warnings=0 sorry=0
+T2_Validation          exit=0 errors=0 warnings=0 sorry=0
+DataProvenance         exit=0 errors=0 warnings=0 sorry=0
+T3_ECSChannels         exit=0 errors=0 warnings=0 sorry=0
+T4_ClaimLadder         exit=0 errors=0 warnings=0 sorry=0
+RH_MeasureTheory       exit=0 errors=0 warnings=0 sorry=0
+RH_WeakConvergence     exit=0 errors=0 warnings=0 sorry=0
+RH_LiCriterion         exit=0 errors=0 warnings=0 sorry=0
+RH_ExplicitFormula     exit=0 errors=0 warnings=0 sorry=0
+RH_DeviationMeasure    exit=0 errors=0 warnings=0 sorry=0
+RH_SpectralMeasure     exit=0 errors=0 warnings=0 sorry=0
+RH_WeilFormula         exit=0 errors=0 warnings=0 sorry=0
+W1_WaveMedium          exit=0 errors=0 warnings=0 sorry=0
+W2_MeasureEMA          exit=0 errors=0 warnings=0 sorry=0
+W3_DoseLandscape       exit=0 errors=0 warnings=0 sorry=0
+W4_SeedPath            exit=0 errors=0 warnings=0 sorry=0
+W8_FastPath            exit=0 errors=0 warnings=0 sorry=0
+W9_SpectralWeight      exit=0 errors=0 warnings=0 sorry=0
+root CddFormalization  exit=0 errors=0
+RESULT: all 27 source files (26 modules + root) compile clean (0 errors, zero sorry)

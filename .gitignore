@@ -15,3 +15,13 @@ desktop.ini
 # Temporary compilation output
 errors.txt
 *.txt
+
+# Audit-round artifacts kept on disk but not tracked (moved out of module tree per K7, 2026-09-25)
+/archive/
+/arxiv_papers/
+/cdd-*/
+/cdd_*/
+__pycache__/
+*.html
+*.log
+improvement_suggestions_*.md

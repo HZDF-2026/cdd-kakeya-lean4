@@ -2,5 +2,9 @@ name = "cdd_formalization"
 version = "0.1.0"
 defaultTargets = ["CddFormalization"]
 
+[[require]]
+name = "mathlib"
+path = "../mathlib432"
+
 [[lean_lib]]
 name = "CddFormalization"
