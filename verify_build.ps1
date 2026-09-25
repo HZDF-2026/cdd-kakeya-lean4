@@ -18,6 +18,10 @@
 # [H3, 2026-09-04] added pre-scan: root-level and scratch/ .lean files must not
 #          contain any custom `axiom` declaration (AxiomAudit scope extension);
 #          sorry/admit in scratch are allowed (WIP) but axioms are not.
+# [K8, 2026-09-25] clean-state anchor: commit 7a5f53c locks the 27/27 all-green
+#          state (0 errors/0 warnings/0 sorry; evidence verify_out_20260925.txt).
+# [K7, 2026-09-25] 7 audit dirs moved from CddFormalization/ to archive/ (untracked);
+#          D1 extended to assert CddFormalization contains NO subdirectories.
 # Usage: powershell -ExecutionPolicy Bypass -File H:\cdd_lean4\verify_build.ps1
 $ErrorActionPreference = 'Continue'
 $toolchain = 'H:\lean4\lean-4.32.2-windows\bin'
@@ -45,6 +49,13 @@ $mods = @('Basic','Utils','Kakeya','Kolmogorov45','MeasureTheory','RatVerificati
 $dirCount = (Get-ChildItem CddFormalization -Filter *.lean).Count
 if ($dirCount -ne $mods.Count) {
     "SELF-CHECK FAILED: CddFormalization has $dirCount .lean files but `$mods lists $($mods.Count) modules"
+    exit 1
+}
+# [K7, 2026-09-25] CddFormalization must contain NO subdirectories (audit dirs
+# belong in archive/, which is untracked)
+$subDirs = @(Get-ChildItem CddFormalization -Directory -ErrorAction SilentlyContinue)
+if ($subDirs.Count -gt 0) {
+    "SELF-CHECK FAILED: CddFormalization contains $($subDirs.Count) subdirectory(ies): $($subDirs.Name -join ', ')"
     exit 1
 }
 
