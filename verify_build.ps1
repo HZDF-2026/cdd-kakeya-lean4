@@ -22,6 +22,14 @@
 #          state (0 errors/0 warnings/0 sorry; evidence verify_out_20260925.txt).
 # [K7, 2026-09-25] 7 audit dirs moved from CddFormalization/ to archive/ (untracked);
 #          D1 extended to assert CddFormalization contains NO subdirectories.
+# [K12, 2026-09-27] scratch ledger gate: every scratch/*.lean must be registered
+#          by name in scratch/WIP_LEDGER.md. The K5 ledger policy (2026-09-12)
+#          was human-check only until now; it is mechanically enforced here.
+# [K11, 2026-09-27] git clean-state gate: `git status --porcelain` must be empty
+#          before any compile work runs. Blind spot that motivated this gate:
+#          scripts/c1_cross_source_recheck.py ran UNTRACKED 2026-09-25..27 with
+#          no pipeline alarm. (The 2026-08-28 header note "git is not installed"
+#          is stale: git.exe lives at C:\Program Files\Git; the gate requires it.)
 # Usage: powershell -ExecutionPolicy Bypass -File H:\cdd_lean4\verify_build.ps1
 $ErrorActionPreference = 'Continue'
 $toolchain = 'H:\lean4\lean-4.32.2-windows\bin'
@@ -76,6 +84,38 @@ if ($axiomHits.Count -gt 0) {
     $axiomHits | ForEach-Object { "    $_" }
     exit 1
 }
+
+# [K12, 2026-09-27] scratch ledger gate: every scratch/*.lean must be registered
+# by name in scratch/WIP_LEDGER.md (K5 policy, mechanically enforced)
+$ledgerPath = 'H:\cdd_lean4\scratch\WIP_LEDGER.md'
+if (-not (Test-Path $ledgerPath)) {
+    "LEDGER-CHECK FAILED: scratch/WIP_LEDGER.md missing (required by K5 policy since 2026-09-12)"
+    exit 1
+}
+$ledger = Get-Content $ledgerPath -Raw
+$scratchLean = @(Get-ChildItem H:\cdd_lean4\scratch -Filter *.lean -ErrorAction SilentlyContinue)
+$unregistered = @($scratchLean | Where-Object { $ledger -notmatch [regex]::Escape($_.Name) })
+if ($unregistered.Count -gt 0) {
+    "LEDGER-CHECK FAILED: $($unregistered.Count) of $($scratchLean.Count) scratch .lean file(s) not registered in WIP_LEDGER.md:"
+    $unregistered | ForEach-Object { "    $($_.Name)" }
+    exit 1
+}
+"ledger check: $($scratchLean.Count) scratch .lean files, all registered in WIP_LEDGER.md"
+
+# [K11, 2026-09-27] git clean-state gate: porcelain must be empty before any
+# compile work; verification claims are only valid against a committed state
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    "GIT-GATE FAILED: git not on PATH - clean-state guarantee cannot be established"
+    exit 1
+}
+$dirty = @(git status --porcelain)
+if ($dirty.Count -gt 0) {
+    "GIT-GATE FAILED: working tree not clean ($($dirty.Count) untracked/modified path(s)) - commit or stash before verifying:"
+    $dirty | ForEach-Object { "    $_" }
+    exit 1
+}
+$head = git rev-parse --short HEAD
+"clean-state anchor: HEAD $head (porcelain empty)"
 
 $fail = 0
 foreach ($m in $mods) {

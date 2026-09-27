@@ -1,0 +1,69 @@
+{
+  "recheck_id": "J12",
+  "date": "2026-09-27 (A4 execution re-run; first computation 2026-09-25)",
+  "status": "computed",
+  "purpose": "C1 cross-source recheck on the ALIGNED intersection window; preregistered v5 rule (each source its own trailing 12 months) remains the verdict of record",
+  "provenance": {
+    "gistemp": {
+      "file": "H:\\cdd_ecs_data\\C1_gistemp_monthly.csv",
+      "lf_normalized_sha256": "6CFA44E7BBACD9B12CB10BDD64B3182C2735FA3F3A95688E1F7BC8E5DFCECE93",
+      "registered_sha256_v5": "6CFA44E7BBACD9B12CB10BDD64B3182C2735FA3F3A95688E1F7BC8E5DFCECE93",
+      "match": true,
+      "note": "cache file stores CRLF; registered hash is of the original LF response body"
+    },
+    "hadcrut5": {
+      "file": "H:\\cdd_ecs_data\\C1_hadcrut5_monthly.csv",
+      "lf_normalized_sha256": "75673ADDE85C4A3A52C8BD987D4FF643C6FC4FC3174A6168ACE10DC1B5A70A99",
+      "registered_sha256_v5": "75673ADDE85C4A3A52C8BD987D4FF643C6FC4FC3174A6168ACE10DC1B5A70A99",
+      "match": true
+    }
+  },
+  "offsets_A1_1": {
+    "mode": "derived_at_runtime_from_hadcrut5 (A1-1, verbatim v4 scheme)",
+    "off_1850_1900_C": 0.3565,
+    "off_1951_1980_C": 0.0766,
+    "gistemp_pi_offset_C": 0.2799,
+    "v5_registered_gistemp_pi_offset_C": 0.2799,
+    "offset_matches_v5": true
+  },
+  "aligned_window": {
+    "months": [
+      "2024-03",
+      "2025-02"
+    ],
+    "n_months": 12,
+    "gistemp_months_available": true
+  },
+  "readings": {
+    "gistemp_t12_C_vs_1951_1980": 1.28,
+    "gistemp_t12_C_vs_1850_1900": 1.5599,
+    "hadcrut5_t12_C_vs_1961_1990": 1.1757,
+    "hadcrut5_t12_C_vs_1850_1900": 1.5322,
+    "abs_diff_C_aligned": 0.0277,
+    "abs_diff_C_preregistered_misaligned_v5_record": 0.0656,
+    "abs_diff_C_preregistered_rule_recomputed": 0.0656,
+    "preregistered_rule_recomputed_matches_v5": true,
+    "gistemp_own_window_months": [
+      "2025-08",
+      "2026-07"
+    ],
+    "misalignment_months": 17,
+    "disagreement_gate_C": 0.1,
+    "disagreement_aligned": false,
+    "series_extent": {
+      "gistemp_last_month": "2026-07",
+      "hadcrut5_last_month": "2025-02"
+    }
+  },
+  "verdict_A4": {
+    "amendment": "A4 executed 2026-09-27; registered in cdd_ecs_channel_preregistration_A4_20260927.md (+ machine-readable JSON twin) BEFORE this data contact; same sha256-gated cached raw files as v5",
+    "rule": "window offset > 0 months => cross_source verdict = INDETERMINATE (boolean forbidden); aligned-window recomputation is disclosure-grade only",
+    "window_offset_months": 17,
+    "cross_source_verdict": "INDETERMINATE"
+  },
+  "verdict_semantics": {
+    "preregistered_rule": "each source its own trailing 12 months (v1.0 verbatim, A1-2 sum/12) — v5 abs_diff 0.0656 with 17-month offset stands as the verdict of record, annotated INDETERMINATE per A4 (annotation layer, values unchanged)",
+    "j12_recheck": "aligned-window abs_diff = 0.0277 C; disclosure-grade alignment sensitivity only, does NOT overwrite the frozen v5 snapshot",
+    "recommended_amendment": "A4 (EXECUTED 2026-09-27; was 'proposed, not yet executed' in the 2026-09-25 output): window alignment upgraded to verdict-grade — trailing windows offset => cross_source verdict reads INDETERMINATE instead of a plain boolean; registration preceded this re-run per preregistration discipline"
+  }
+}
